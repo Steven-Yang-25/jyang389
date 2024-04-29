@@ -89,3 +89,16 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int sys_getsiblings(void) {
+    extern struct proc *myproc(void);
+    struct proc *p = myproc();
+    acquire(&ptable.lock);  // Lock the process table
+    for (struct proc *pp = ptable.proc; pp < &ptable.proc[NPROC]; pp++) {
+        if (pp->parent == p->parent && pp != p) {
+            cprintf("%d ", pp->pid);  // Print sibling PIDs
+        }
+    }
+    release(&ptable.lock);
+    return 0;
+}
